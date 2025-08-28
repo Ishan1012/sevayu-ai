@@ -81,7 +81,7 @@ export default function Header() {
           </div>
         </div>
       </div>
-      
+
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className="lg:hidden">
@@ -90,10 +90,7 @@ export default function Header() {
               Appointment
             </Link>
             <Link href="/consult" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-colors duration-200">
-                Smart Consult
-              </Link>
-            <Link href="/services" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-colors duration-200">
-              Services
+              Smart Consult
             </Link>
             <Link href="/blog" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50 transition-colors duration-200">
               Blog
