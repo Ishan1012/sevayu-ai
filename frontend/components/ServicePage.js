@@ -19,18 +19,6 @@ const ServicePage = () => {
     };
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
-            {/* Hero Section */}
-            <header className="bg-white shadow-sm">
-                <div className="container mx-auto px-6 py-12 text-center">
-                    <h1 className="text-4xl md:text-6xl font-bold text-slate-900 leading-tight tracking-tighter">
-                        Our Services
-                    </h1>
-                    <p className="mt-4 text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">
-                        Leveraging cutting-edge AI to provide comprehensive, accessible, and personalized healthcare solutions.
-                    </p>
-                </div>
-            </header>
-
             <main>
                 {/* Core Services Section */}
                 <section id="core-services" className="py-20 md:py-24 bg-white">
@@ -124,22 +112,6 @@ const ServicePage = () => {
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </section>
-
-                {/* Final CTA */}
-                <section className="w-full py-20 text-center">
-                    <div className="container mx-auto px-6">
-                        <h3 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-8">
-                            Ready to take control of your health?
-                        </h3>
-                        <button
-                        onClick={openConsultPage}
-                            className="inline-flex cursor-pointer items-center justify-center px-8 py-4 bg-emerald-600 text-white font-semibold text-lg rounded-full shadow-lg hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-300 transition-all duration-300 ease-in-out transform hover:-translate-y-1"
-                        >
-                            Get Started with Sevayu AI
-                            <ArrowRight className="ml-3 w-6 h-6" />
-                        </button>
                     </div>
                 </section>
             </main>
