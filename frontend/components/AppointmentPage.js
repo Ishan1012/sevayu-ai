@@ -81,15 +81,29 @@ const Step1_AppointmentType = ({ onSelect, nextStep }) => {
 };
 
 const Step2_ChooseDoctor = ({ onSelect, details, nextStep, prevStep }) => {
-    const [doctors, setDoctors] = useState([]);
+    const [allDoctors, setAllDoctors] = useState([]);
+    const [filteredDoctors, setFilteredDoctors] = useState([]);
+    const [specialties, setSpecialties] = useState([]);
+    const [selectedSpecialty, setSelectedSpecialty] = useState('');
     const [selectedDoctor, setSelectedDoctor] = useState(details.doctor);
     const [selectedTime, setSelectedTime] = useState(details.timeSlot);
     const [selectedDate, setSelectedDate] = useState(details.date);
 
     useEffect(() => {
         const data = getDoctors();
-        setDoctors(data);
-    }, [])
+        setAllDoctors(data);
+        const uniqueSpecialties = [...new Set(data.map(doc => doc.specialty))];
+        setSpecialties(uniqueSpecialties);
+    }, []);
+
+    useEffect(() => {
+        if (selectedSpecialty) {
+            setFilteredDoctors(allDoctors.filter(doc => doc.specialty === selectedSpecialty));
+            setSelectedDoctor(null); // Reset doctor selection when specialty changes
+        } else {
+            setFilteredDoctors([]);
+        }
+    }, [selectedSpecialty, allDoctors]);
 
     const handleNext = () => {
         onSelect('doctor', selectedDoctor);
@@ -101,18 +115,32 @@ const Step2_ChooseDoctor = ({ onSelect, details, nextStep, prevStep }) => {
     return (
         <div>
             <h2 className="text-3xl font-bold text-slate-900 mb-6 text-center">Choose Doctor, Date & Time</h2>
-            <div className="space-y-6">
-                <h3 className="font-bold text-2xl text-slate-800 text-center md:text-left">Select a Doctor</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    {doctors.map(doc => (
-                        <div key={doc.name} onClick={() => setSelectedDoctor(doc)} className={`p-6 border-2 rounded-xl cursor-pointer text-center ${selectedDoctor?.name === doc.name ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200'}`}>
-                            <h3 className="font-bold text-xl">{doc.name}</h3>
-                            <p className="text-slate-600 text-sm">{doc.specialty}</p>
-                            {selectedDoctor?.name === doc.name && <CheckCircle className="text-emerald-500 mx-auto mt-2" />}
-                        </div>
-                    ))}
-                </div>
+            
+            <div className="mb-8">
+                <label className="font-bold text-2xl text-slate-800 mb-4 block">Select a Specialty</label>
+                <select 
+                    value={selectedSpecialty} 
+                    onChange={(e) => setSelectedSpecialty(e.target.value)}
+                    className="w-full mt-1 p-3 border border-slate-300 rounded-lg bg-white"
+                >
+                    <option value="">-- Choose a specialty --</option>
+                    {specialties.map(spec => <option key={spec} value={spec}>{spec}</option>)}
+                </select>
             </div>
+
+            {selectedSpecialty && (
+                <div className="space-y-6">
+                    <h3 className="font-bold text-2xl text-slate-800">Select a Doctor</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {filteredDoctors.map(doc => (
+                            <div key={doc.name} onClick={() => setSelectedDoctor(doc)} className={`p-6 border-2 rounded-xl cursor-pointer text-center ${selectedDoctor?.name === doc.name ? 'border-emerald-500 bg-emerald-50' : 'border-slate-200'}`}>
+                                <h3 className="font-bold text-xl">{doc.name}</h3>
+                                {selectedDoctor?.name === doc.name && <CheckCircle className="text-emerald-500 mx-auto mt-2" />}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {selectedDoctor && (
                 <div className="mt-8">

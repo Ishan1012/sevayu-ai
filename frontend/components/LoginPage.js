@@ -1,11 +1,15 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import {
     HeartPulse,
     Mail,
-    Lock
+    Lock,
+    Eye,
+    EyeOff
 } from "lucide-react";
+import getDoctors from '@/services/DoctorService';
 import Link from 'next/link';
+
 
 const GoogleIcon = () => (
     <svg className="w-5 h-5 mr-3" viewBox="0 0 48 48">
@@ -17,6 +21,32 @@ const GoogleIcon = () => (
 );
 
 const LoginPage = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setError('');
+
+        // Basic validation
+        if (!email || !password) {
+            setError("Please enter both email and password.");
+            return;
+        }
+
+        const user = getDoctors().find(doctor => doctor.email === email);
+
+        if (user) {
+            if (password) {
+                alert(`Login successful! Welcome, ${user.name}.`);
+            }
+        } else {
+            setError("Invalid email or password. Please try again.");
+        }
+    };
+
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex items-center justify-center p-4 m-15">
             <div className="w-full max-w-4xl mx-auto">
@@ -30,7 +60,7 @@ const LoginPage = () => {
                         <h2 className="text-3xl font-bold text-slate-900 mb-2">Welcome Back</h2>
                         <p className="text-slate-600 mb-8">Sign in to continue to your health dashboard.</p>
 
-                        <form className="space-y-6">
+                        <form className="space-y-6" onSubmit={handleSubmit}>
                             <div>
                                 <label className="font-semibold text-slate-700">Email Address</label>
                                 <div className="relative mt-1">
@@ -38,39 +68,59 @@ const LoginPage = () => {
                                     <input
                                         type="email"
                                         placeholder="you@example.com"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
                                         className="w-full py-3 pl-10 pr-4 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                                        required
                                     />
                                 </div>
                             </div>
+
+                            {/* Password with eye toggle */}
                             <div>
                                 <div className="flex justify-between items-center">
                                     <label className="font-semibold text-slate-700">Password</label>
-                                    <a href="#" className="text-sm font-semibold text-emerald-600 hover:underline">Forgot Password?</a>
+                                    <Link href="#" className="text-sm font-semibold text-emerald-600 hover:underline">Forgot Password?</Link>
                                 </div>
                                 <div className="relative mt-1">
                                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                                     <input
-                                        type="password"
+                                        type={showPassword ? "text" : "password"}
                                         placeholder="••••••••"
-                                        className="w-full py-3 pl-10 pr-4 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        className="w-full py-3 pl-10 pr-10 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                                        required
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-500 hover:text-emerald-600"
+                                    >
+                                        {showPassword ? <EyeOff className="w-5 h-5 cursor-pointer" /> : <Eye className="w-5 h-5 cursor-pointer" />}
+                                    </button>
                                 </div>
                             </div>
+                            
+                            {error && <p className="text-red-500 text-sm">{error}</p>}
+
                             <button
                                 type="submit"
-                                className="w-full bg-emerald-600 text-white font-semibold py-3 rounded-lg hover:bg-emerald-700 transition-colors"
+                                className="w-full bg-emerald-600 text-white font-semibold py-3 cursor-pointer rounded-lg hover:bg-emerald-700 transition-colors"
                             >
                                 Sign In
                             </button>
                         </form>
+
                         <div className="flex items-center">
                             <div className="flex-grow border-t border-slate-300"></div>
                             <span className="mx-4 text-slate-500 font-semibold">OR</span>
                             <div className="flex-grow border-t border-slate-300"></div>
                         </div>
+
                         <button
                             type="button"
-                            className="w-full flex items-center justify-center bg-white text-slate-700 font-semibold py-3 rounded-lg border border-slate-300 hover:bg-slate-50 transition-colors"
+                            className="w-full flex items-center cursor-pointer justify-center bg-white text-slate-700 font-semibold py-3 rounded-lg border border-slate-300 hover:bg-slate-50 transition-colors"
                         >
                             <GoogleIcon />
                             Sign in with Google
@@ -86,6 +136,7 @@ const LoginPage = () => {
                         <img
                             src="./images/login.jpg"
                             alt="login image"
+                            loading='lazy'
                             className="w-full h-full object-cover opacity-50"
                         />
                     </div>
