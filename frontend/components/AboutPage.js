@@ -8,17 +8,9 @@ import {
     Target
 } from "lucide-react";
 import ServicePage from './ServicePage';
-import getTeamMembers from '@/services/getTeamMembers';
-
+import teamMembers from '@/services/getTeamMembers';
 
 const AboutPage = () => {
-    const [teamMembers, setTeamMembers] = useState([]);
-
-    useEffect(() => {
-        const team = getTeamMembers();
-        setTeamMembers(team);
-    }, []);
-    
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased mt-10">
             <ServicePage />

@@ -7,8 +7,4 @@ const teamMembers = [
     { name: "Pratyush", imageUrl: "https://placehold.co/128x128/E0E7FF/4F46E5?text=P" }
 ];
 
-const getTeamMembers = () => {
-    return teamMembers;
-}
-
-export default getTeamMembers;
+export default teamMembers;
