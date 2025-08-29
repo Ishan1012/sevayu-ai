@@ -1,5 +1,5 @@
 "use client";
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
     Heart, 
     BrainCircuit, 
@@ -8,19 +8,17 @@ import {
     Target
 } from "lucide-react";
 import ServicePage from './ServicePage';
+import getTeamMembers from '@/services/getTeamMembers';
 
-// This component can be used as a new page in a Next.js or React application.
-// It provides information about the mission, vision, and team behind Sevayu AI.
 
 const AboutPage = () => {
-    const teamMembers = [
-        { name: "Ishan Dwivedi", imageUrl: "https://placehold.co/128x128/E0E7FF/4F46E5?text=ID" },
-        { name: "Suyash Sharma", imageUrl: "https://placehold.co/128x128/E0E7FF/4F46E5?text=SS" },
-        { name: "Nitin Shukla", imageUrl: "https://placehold.co/128x128/E0E7FF/4F46E5?text=NS" },
-        { name: "Amit Singh Gautam", imageUrl: "https://placehold.co/128x128/E0E7FF/4F46E5?text=AG" },
-        { name: "Pratyush", imageUrl: "https://placehold.co/128x128/E0E7FF/4F46E5?text=P" }
-    ];
+    const [teamMembers, setTeamMembers] = useState([]);
 
+    useEffect(() => {
+        const team = getTeamMembers();
+        setTeamMembers(team);
+    }, []);
+    
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased mt-10">
             <ServicePage />

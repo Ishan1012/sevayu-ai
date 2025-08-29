@@ -37,8 +37,6 @@ function LandingPage() {
 
     return (
         <div className="min-h-screen bg-emerald-50 font-inter text-gray-800 antialiased flex flex-col items-center p-4 sm:p-6 md:p-8 lg:p-12 mt-10">
-            
-            
             {/* Hero Section */}
             <main className="flex-grow flex items-center justify-center w-full min-h-[calc(100vh-180px)]">
                 <div className="w-full max-w-5xl bg-white rounded-3xl shadow-2xl p-8 sm:p-12 md:p-16 lg:p-20 text-center transition-all duration-500 ease-in-out hover:shadow-2xl relative overflow-hidden">

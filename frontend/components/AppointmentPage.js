@@ -1,14 +1,12 @@
 "use client";
-import React, { useState } from 'react';
-import { 
-    Calendar, 
-    User, 
-    Stethoscope, 
-    Clock, 
+import React, { useEffect, useState } from 'react';
+import {
     ChevronLeft, 
     ChevronRight, 
     CheckCircle 
 } from "lucide-react";
+import getDoctors from '@/services/DoctorService';
+import allAppointmentTypes from '@/services/getAppointmentTypes';
 
 const AppointmentPage = () => {
     const [step, setStep] = useState(1);
@@ -60,12 +58,8 @@ const AppointmentPage = () => {
 };
 
 const Step1_AppointmentType = ({ onSelect, nextStep }) => {
-    const appointmentTypes = [
-        { icon: <Stethoscope size={32} />, title: "New Consultation", description: "For new patients or new health concerns." },
-        { icon: <Calendar size={32} />, title: "Follow-up Visit", description: "For existing patients continuing their treatment." },
-        { icon: <User size={32} />, title: "Annual Check-up", description: "A routine yearly health examination." },
-    ];
-    
+    const appointmentTypes = allAppointmentTypes;
+
     return (
         <div>
             <h2 className="text-3xl font-bold fs-4 text-slate-900 mb-6 text-center">Select Appointment Type</h2>
@@ -87,16 +81,15 @@ const Step1_AppointmentType = ({ onSelect, nextStep }) => {
 };
 
 const Step2_ChooseDoctor = ({ onSelect, details, nextStep, prevStep }) => {
-    const doctors = [
-        { name: "Dr. Evelyn Reed", specialty: "Cardiologist" },
-        { name: "Dr. Marcus Thorne", specialty: "Neurologist" },
-        { name: "Dr. Lena Petrova", specialty: "Dermatologist" },
-    ];
-    const timeSlots = ["09:00 AM", "10:30 AM", "01:00 PM", "02:30 PM", "04:00 PM"];
-    
+    const [doctors, setDoctors] = useState([]);
     const [selectedDoctor, setSelectedDoctor] = useState(details.doctor);
     const [selectedTime, setSelectedTime] = useState(details.timeSlot);
     const [selectedDate, setSelectedDate] = useState(details.date);
+
+    useEffect(() => {
+        const data = getDoctors();
+        setDoctors(data);
+    }, [])
 
     const handleNext = () => {
         onSelect('doctor', selectedDoctor);
@@ -138,7 +131,7 @@ const Step2_ChooseDoctor = ({ onSelect, details, nextStep, prevStep }) => {
                 <div className="mt-8">
                     <h3 className="font-bold text-2xl mb-4 text-center">Available Time Slots for {selectedDoctor.name}</h3>
                     <div className="flex flex-wrap justify-center gap-4">
-                        {timeSlots.map(time => (
+                        {selectedDoctor.timeSlots.map(time => (
                             <button 
                                 key={time} 
                                 onClick={() => setSelectedTime(time)}
