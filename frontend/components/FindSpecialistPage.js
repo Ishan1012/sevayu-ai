@@ -81,7 +81,7 @@ const FindSpecialistPage = () => {
               </div>
               <button 
                 onClick={handleSearch} 
-                className="w-full bg-emerald-600 text-white font-semibold rounded-lg cursor-pointer hover:bg-emerald-700 flex items-center justify-center"
+                className="w-full bg-emerald-600 py-3 text-white font-semibold rounded-lg cursor-pointer hover:bg-emerald-700 flex items-center justify-center"
               >
                 <Search className="mr-2" />
                 Search

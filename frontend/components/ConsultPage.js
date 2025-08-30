@@ -42,7 +42,7 @@ const ConsultPage = () => {
     };
 
     const openFindSpecialist = () => {
-        router.push('/doctor/find');
+        router.push('/doctor');
     }
 
     return (

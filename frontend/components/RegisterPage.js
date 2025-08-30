@@ -9,6 +9,8 @@ import {
     EyeOff
 } from "lucide-react";
 import Link from 'next/link';
+import RoleSelectionPage from './RoleSelectionPage';
+import getDoctors from '@/services/DoctorService';
 
 
 const GoogleIcon = () => (
@@ -20,7 +22,7 @@ const GoogleIcon = () => (
     </svg>
 );
 
-const RegisterPage = () => {
+const RegisterPage = ({ userType }) => {
     const [fullName, setFullName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -28,6 +30,7 @@ const RegisterPage = () => {
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [roleSelect, setRoleSelect] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -47,18 +50,22 @@ const RegisterPage = () => {
             return;
         }
 
-        // Check if user already exists (simulation)
-        const userExists = allDoctors.some(doctor => doctor.email === email);
-        if (userExists) {
-            setError("An account with this email already exists.");
-            return;
-        }
+        // // Check if user already exists (simulation)
+        // const userExists = getDoctors().some(doctor => doctor.email === email);
+        // if (userExists) {
+        //     setError("An account with this email already exists.");
+        //     return;
+        // }
 
         // In Link real app, you would now send the data to your backend to be hashed and stored.
-        alert(`Registration successful for ${fullName}!`);
+        // alert(`Registration successful for ${fullName}!`);
         // You could redirect the user to the login page or Link dashboard
-        // window.location.href = '/login';
+        setRoleSelect(true);
     };
+
+    if(roleSelect) {
+        return <RoleSelectionPage />;
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex items-center justify-center p-4 m-15">

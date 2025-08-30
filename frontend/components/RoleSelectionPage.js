@@ -1,15 +1,23 @@
 "use client";
-import React from 'react';
+import React, { useState } from 'react';
 import { 
     HeartPulse,
     User,
     Stethoscope,
     ArrowRight
 } from "lucide-react";
+import RegisterPage from './RegisterPage';
+import DoctorRegistrationPage from './DoctorRegitstrationPage';
 
 const RoleSelectionPage = () => {
+    const [selectedRole, setSelectedRole] = useState(null);
+
+    if (selectedRole === 'doctor') {
+        return <DoctorRegistrationPage />;
+    }
+
     return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col items-center justify-center p-4">
+        <div className="min-h-screen bg-slate-50 font-sans text-slate-800 flex flex-col items-center justify-center p-4 mt-15">
             <div className="text-center mb-12">
                 <HeartPulse className="h-12 w-12 text-emerald-500 mx-auto mb-4" />
                 <h1 className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight tracking-tighter">
@@ -31,7 +39,10 @@ const RoleSelectionPage = () => {
                         <p className="text-slate-600 text-lg mb-8 flex-grow">
                             Get AI-powered symptom analysis, find specialists, and manage your health journey.
                         </p>
-                        <button className="w-full inline-flex items-center justify-center px-6 py-3 bg-emerald-600 text-white font-semibold rounded-full shadow-md hover:bg-emerald-700 transition-colors">
+                        <button 
+                            className="w-full inline-flex cursor-pointer items-center justify-center px-6 py-3 bg-emerald-600 text-white font-semibold rounded-full shadow-md hover:bg-emerald-700 transition-colors"
+                            onClick={() => setSelectedRole('patient')}
+                        >
                             Continue as a Patient
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </button>
@@ -48,7 +59,10 @@ const RoleSelectionPage = () => {
                         <p className="text-slate-600 text-lg mb-8 flex-grow">
                             Join our network of specialists, manage appointments, and access AI-assisted diagnostic tools.
                         </p>
-                        <button className="w-full inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:bg-blue-700 transition-colors">
+                        <button 
+                            className="w-full inline-flex cursor-pointer items-center justify-center px-6 py-3 bg-blue-600 text-white font-semibold rounded-full shadow-md hover:bg-blue-700 transition-colors" 
+                            onClick={() => setSelectedRole('doctor')}
+                        >
                             Continue as a Doctor
                             <ArrowRight className="ml-2 w-5 h-5" />
                         </button>
