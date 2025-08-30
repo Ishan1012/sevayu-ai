@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { getDoctor } from '@/services/DoctorService';
 import { getDoctorAppointments, getDoctorRecords, getRecords } from '@/services/AppointmentService';
+import LoadingPage from './LoadingPage';
 
 const DoctorProfilePage = () => {
     const [doctor, setDoctor] = useState(null);
@@ -48,12 +49,7 @@ const DoctorProfilePage = () => {
 
 
     if (isLoading) {
-        return (
-            <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-                {/* A simple loader */}
-                <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-emerald-500"></div>
-            </div>
-        );
+        return <LoadingPage />;
     }
 
     if (!doctor) {
