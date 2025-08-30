@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import getDoctors from '@/services/DoctorService';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 
 const GoogleIcon = () => (
@@ -25,6 +26,7 @@ const LoginPage = () => {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const router = useRouter();
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -36,11 +38,9 @@ const LoginPage = () => {
             return;
         }
 
-        const user = getDoctors().find(doctor => doctor.email === email);
-
-        if (user) {
+        if (email) {
             if (password) {
-                alert(`Login successful! Welcome, ${user.name}.`);
+                router.push('/profile');
             }
         } else {
             setError("Invalid email or password. Please try again.");
