@@ -13,23 +13,33 @@ import {
     RefreshCw
 } from "lucide-react";
 import dynamic from "next/dynamic";
-import getAppointments from '@/services/AppointmentService';
+import { getAppointmentsById } from '@/services/AppointmentService';
 import LoadingPage from './LoadingPage';
+import { getDoctor } from '@/services/DoctorService';
 
 const DoctorMap = dynamic(() => import("./DoctorMap"), { ssr: false });
 
-const AppointmentDetailsPage = () => {
+const AppointmentDetailsPage = ({ appointmentId }) => {
     const [appointment, setAppointment] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Simulate fetching appointment data
         setTimeout(() => {
-            const data = getAppointments();
-            setAppointment(data);
+            let appointment = getAppointmentsById(appointmentId);
+
+            if (appointment) {
+                appointment = {
+                    ...appointment,
+                    doctor: getDoctor(appointment.doctorid) || null
+                };
+            }
+            console.log(appointment);
+
+            setAppointment(appointment);
             setIsLoading(false);
         }, 1000);
-    }, []);
+    }, [appointmentId]);
+
 
     if (isLoading) {
         return <LoadingPage />;
@@ -60,14 +70,12 @@ const AppointmentDetailsPage = () => {
     );
 };
 
-// --- Sub-components ---
-
 const DoctorInfoCard = ({ doctor }) => (
     <div className="bg-white rounded-2xl shadow-xl p-8">
         <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left">
-            <img 
-                src={doctor.imageUrl} 
-                alt={doctor.name} 
+            <img
+                src={doctor.imageUrl}
+                alt={doctor.name}
                 className="w-32 h-32 rounded-full border-4 border-emerald-200 mb-6 sm:mb-0 sm:mr-8"
             />
             <div className="flex-grow">
@@ -115,13 +123,13 @@ const AppointmentInfoCard = ({ appointment }) => {
                     <InfoDetail icon={<MapPin />} label="Location" value={appointment.doctor.address} />
                     <div className="bg-slate-50 p-4 rounded-lg">
                         <h4 className="font-bold text-slate-800 mb-2">Instructions/Notes</h4>
-                        <p className="text-slate-600 text-sm">{appointment.patientInfo.notes}</p>
+                        <p className="text-slate-600 text-sm">Please arrive 15 minutes early and bring any previous medical records or reports related to your condition.</p>
                     </div>
                 </div>
             </div>
             {/* Map Placeholder */}
             <div className="mt-8 h-64 bg-slate-200 rounded-lg overflow-hidden">
-                 <DoctorMap doctors={[appointment.doctor]} />
+                <DoctorMap doctors={[appointment.doctor]} />
             </div>
         </div>
     );
@@ -144,10 +152,10 @@ const ActionButtons = ({ status }) => {
         <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-slate-900 mb-4">Manage Appointment</h2>
             <div className="flex flex-col sm:flex-row gap-4">
-                <button className="flex-1 flex items-center justify-center font-semibold bg-slate-200 text-slate-700 px-6 py-3 rounded-lg hover:bg-slate-300 transition-colors">
+                <button className="flex-1 flex items-center justify-center cursor-pointer font-semibold bg-slate-200 text-slate-700 px-6 py-3 rounded-lg hover:bg-slate-300 transition-colors">
                     <RefreshCw size={18} className="mr-2" /> Reschedule
                 </button>
-                <button className="flex-1 flex items-center justify-center font-semibold bg-red-100 text-red-700 px-6 py-3 rounded-lg hover:bg-red-200 transition-colors">
+                <button className="flex-1 flex items-center justify-center cursor-pointer font-semibold bg-red-100 text-red-700 px-6 py-3 rounded-lg hover:bg-red-200 transition-colors">
                     <XCircle size={18} className="mr-2" /> Cancel Appointment
                 </button>
             </div>

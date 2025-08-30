@@ -7,7 +7,6 @@ import {
     Calendar,
     LogOut,
     ChevronRight,
-    ShieldCheck,
     FileText,
     Settings,
     Bell,
@@ -15,6 +14,9 @@ import {
 } from "lucide-react";
 import LoadingPage from './LoadingPage';
 import { useRouter } from 'next/navigation';
+import { getPatient } from '@/services/PaitentService';
+import getAppointments from '@/services/AppointmentService';
+import getDoctors, { getDoctor } from '@/services/DoctorService';
 
 const UserProfilePage = () => {
     const [user, setUser] = useState(null);
@@ -22,49 +24,16 @@ const UserProfilePage = () => {
 
     useEffect(() => {
         const fetchUserData = () => {
-            const fetchedData = {
-                name: "Priya Sharma",
-                email: "priya.sharma@sevayu.ai",
-                age: 28,
-                gender: "Female",
-                phone: "+91 98765 43210",
-                address: "Mumbai, Maharashtra",
-                profileImageUrl: "https://placehold.co/150x150/ECFDF5/10B981?text=PS",
-                upcomingAppointments: [
-                    {
-                        id: 1,
-                        doctorName: "Dr. Evelyn Reed",
-                        specialty: "Cardiologist",
-                        date: "2025-09-05",
-                        time: "10:00 AM",
-                    },
-                    {
-                        id: 2,
-                        doctorName: "Dr. Lena Petrova",
-                        specialty: "Dermatologist",
-                        date: "2025-09-15",
-                        time: "02:30 PM",
-                    },
-                ],
-                medicalRecords: [
-                    {
-                        id: 1,
-                        date: "2024-07-15",
-                        doctorName: "Dr. Marcus Thorne",
-                        specialty: "Neurologist",
-                        diagnosis: "Migraine with Aura",
-                        reportUrl: "#"
-                    },
-                    {
-                        id: 2,
-                        date: "2024-05-20",
-                        doctorName: "Dr. Kenji Tanaka",
-                        specialty: "Orthopedist",
-                        diagnosis: "Minor Ankle Sprain",
-                        reportUrl: "#"
-                    },
-                ]
-            };
+            let fetchedData = getPatient('123');
+            fetchedData.upcomingAppointments = fetchedData.upcomingAppointments.map(item => ({
+                ...item,
+                doctor: getDoctor(item.doctorid)
+            }));
+            fetchedData.medicalRecords = fetchedData.medicalRecords.map(item => ({
+                ...item,
+                doctor: getDoctor(item.doctorid)
+            }));
+            console.log(fetchedData);
 
             setTimeout(() => {
                 setUser(fetchedData);
@@ -102,7 +71,7 @@ const UserProfilePage = () => {
 
                     {/* Right Column: Dashboard and Appointments */}
                     <div className="lg:col-span-2 space-y-8">
-                        <DashboardNav />
+                        <DashboardNav user={user} />
                         <UpcomingAppointments appointments={user.upcomingAppointments} />
                         <MedicalRecords records={user.medicalRecords} />
                     </div>
@@ -114,14 +83,13 @@ const UserProfilePage = () => {
 
 const ProfileCard = ({ user }) => {
     const router = useRouter();
-
     const openSettings = () => {
-        router.push('/settings#accountsettings')
-    }
+        router.push(`/settings?id=${user.id}`);
+    };
     return (
         <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
             <img
-                src={user.profileImageUrl}
+                src={user.profile}
                 alt="User Profile"
                 className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-emerald-200"
             />
@@ -156,7 +124,7 @@ const InfoItem = ({ icon, label, value }) => (
     </div>
 );
 
-const DashboardNav = () => {
+const DashboardNav = ({ user }) => {
     const router = useRouter();
     const navItems = [
         { icon: <FileText />, text: "Medical Records" },
@@ -164,13 +132,15 @@ const DashboardNav = () => {
         { icon: <Settings />, text: "Account Settings" },
     ];
 
-    const handleOptions = (name) => {
+    const handleClick = (name) => {
         if (name === "Account Settings") {
-            router.push('/settings');
+            router.push(`/settings?id=${user.id}`);
+        } else if (name === "Notifications") {
+            router.push(`/settings?id=${user.id}`)
         } else if (name === "Medical Records") {
             router.push('/profile#records');
         }
-    }
+    };
 
     return (
         <div className="bg-white rounded-2xl shadow-xl p-8">
@@ -179,7 +149,7 @@ const DashboardNav = () => {
                 {navItems.map(item => (
                     <div
                         key={item.text}
-                        onClick={() => handleOptions(item.text)}
+                        onClick={() => handleClick(item.text)}
                         className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-lg text-center cursor-pointer hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
                     >
                         <div className="text-emerald-500 mb-2">{React.cloneElement(item.icon, { size: 32, strokeWidth: 1.5 })}</div>
@@ -192,17 +162,12 @@ const DashboardNav = () => {
 };
 
 const UpcomingAppointments = ({ appointments }) => {
-    const router = useRouter();
-    const openAppointment = () => {
-        router.push('/appointments');
-    };
-    
     return (
-        <div onClick={openAppointment} className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-slate-900 mb-6">Upcoming Appointments</h2>
             <div className="space-y-4">
                 {appointments.length > 0 ? (
-                    appointments.map(appt => <AppointmentCard key={appt.id} appointment={appt} />)
+                    appointments.map((appt, index) => <AppointmentCard key={index} appointment={appt} />)
                 ) : (
                     <p className="text-slate-600 text-center py-4">You have no upcoming appointments.</p>
                 )}
@@ -211,28 +176,34 @@ const UpcomingAppointments = ({ appointments }) => {
     );
 }
 
-const AppointmentCard = ({ appointment }) => (
-    <div className="bg-slate-50 p-4 rounded-lg flex items-center justify-between hover:bg-emerald-50 transition-colors cursor-pointer">
-        <div className="flex items-center">
-            <div className="bg-emerald-100 text-emerald-700 p-3 rounded-lg">
-                <Calendar size={24} />
+const AppointmentCard = ({ appointment }) => {
+    const router = useRouter();
+    const openAppointment = () => {
+        router.push(`/appointments?id=${appointment.id}`);
+    };
+    return (
+        <div onClick={openAppointment} className="bg-slate-50 p-4 rounded-lg flex items-center justify-between hover:bg-emerald-50 transition-colors cursor-pointer">
+            <div className="flex items-center">
+                <div className="bg-emerald-100 text-emerald-700 p-3 rounded-lg">
+                    <Calendar size={24} />
+                </div>
+                <div className="ml-4">
+                    <p className="font-bold text-slate-800">Dr. {appointment.doctor.name}</p>
+                    <p className="text-sm text-slate-600">{appointment.doctor.specialty}</p>
+                    <p className="text-sm text-slate-600 font-semibold">{new Date(appointment.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at {appointment.timeSlot}</p>
+                </div>
             </div>
-            <div className="ml-4">
-                <p className="font-bold text-slate-800">Dr. {appointment.doctorName}</p>
-                <p className="text-sm text-slate-600">{appointment.specialty}</p>
-                <p className="text-sm text-slate-600 font-semibold">{new Date(appointment.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at {appointment.time}</p>
-            </div>
+            <ChevronRight className="text-slate-400" />
         </div>
-        <ChevronRight className="text-slate-400" />
-    </div>
-);
+    );
+}
 
 const MedicalRecords = ({ records }) => (
     <div id="records" className="bg-white rounded-2xl shadow-xl p-8">
         <h2 className="text-2xl font-bold text-slate-900 mb-6">Medical Records</h2>
         <div className="space-y-4">
             {records.length > 0 ? (
-                records.map(record => <RecordCard key={record.id} record={record} />)
+                records.map((record, index) => <RecordCard key={index} record={record} />)
             ) : (
                 <p className="text-slate-600 text-center py-4">You have no past medical records.</p>
             )}
@@ -248,7 +219,7 @@ const RecordCard = ({ record }) => (
             </div>
             <div className="ml-4">
                 <p className="font-bold text-slate-800">{record.diagnosis}</p>
-                <p className="text-sm text-slate-600">with Dr. {record.doctorName} ({record.specialty})</p>
+                <p className="text-sm text-slate-600">with Dr. {record.doctor.name} ({record.doctor.specialty})</p>
                 <p className="text-sm text-slate-600 font-semibold">{new Date(record.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
         </div>

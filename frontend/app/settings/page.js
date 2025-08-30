@@ -1,12 +1,16 @@
+'use client';
 import AccountSettingsPage from '@/components/AccountSettingsPage'
 import Header from '@/components/Header'
+import { useSearchParams } from 'next/navigation';
 import React from 'react'
 
 function Settings() {
+  const searchParams = useSearchParams();
+  const userid = searchParams.get("id");
   return (
     <div>
       <Header />
-      <AccountSettingsPage />
+      <AccountSettingsPage userid={userid} />
     </div>
   )
 }

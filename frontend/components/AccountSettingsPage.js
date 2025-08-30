@@ -13,26 +13,16 @@ import {
     EyeOff
 } from "lucide-react";
 import LoadingPage from './LoadingPage';
+import { getPatient } from '@/services/PaitentService';
 
-const initialSettingsData = {
-    name: "Priya Sharma",
-    email: "priya.sharma@sevayu.ai",
-    phone: "+91 98765 43210",
-    address: "Mumbai, Maharashtra",
-    notifications: {
-        appointmentReminders: true,
-        healthTips: true,
-        promotionalUpdates: false,
-    }
-};
-
-const AccountSettingsPage = () => {
+const AccountSettingsPage = ({ userid }) => {
     const [settings, setSettings] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setTimeout(() => {
-            setSettings(initialSettingsData);
+            const data = getPatient(userid);
+            setSettings(data);
             setIsLoading(false);
         }, 1000);
     }, []);
@@ -184,7 +174,7 @@ const NotificationSettings = ({ settings, setSettings }) => {
             title="Notifications"
             description="Choose how you want to be notified."
         >
-            <div className="mt-6 space-y-4">
+            <div id='notification' className="mt-6 space-y-4">
                 <ToggleSwitch label="Appointment Reminders" enabled={settings.notifications.appointmentReminders} onToggle={() => handleToggle('appointmentReminders')} />
                 <ToggleSwitch label="Health Tips & Articles" enabled={settings.notifications.healthTips} onToggle={() => handleToggle('healthTips')} />
                 <ToggleSwitch label="Promotional Updates" enabled={settings.notifications.promotionalUpdates} onToggle={() => handleToggle('promotionalUpdates')} />

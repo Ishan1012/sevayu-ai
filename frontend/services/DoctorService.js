@@ -223,7 +223,7 @@ const allDoctors = [
   {
     id: 18,
     name: "Dr. Sameer Qureshi",
-    specialty: "Pediatrician", // Changed from General Surgeon
+    specialty: "Pediatrician",
     address: "King George's Medical University, Lucknow",
     phone: "555-0118",
     imageUrl: "https://placehold.co/100x100/ECFDF5/10B981?text=SQ",
@@ -262,7 +262,12 @@ const allDoctors = [
 ];
 
 const getDoctors = () => {
-    return allDoctors;
+  return allDoctors;
+}
+
+export const getDoctor = (id) => {
+  id=Number(id);
+  return allDoctors.find(item => item.id === id);
 }
 
 export default getDoctors;
