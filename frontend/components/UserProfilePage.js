@@ -15,8 +15,8 @@ import {
 import LoadingPage from './LoadingPage';
 import { useRouter } from 'next/navigation';
 import { getPatient } from '@/services/PaitentService';
-import getAppointments from '@/services/AppointmentService';
-import getDoctors, { getDoctor } from '@/services/DoctorService';
+import getAppointments, { getRecords } from '@/services/AppointmentService';
+import { getDoctor } from '@/services/DoctorService';
 
 const UserProfilePage = () => {
     const [user, setUser] = useState(null);
@@ -24,25 +24,37 @@ const UserProfilePage = () => {
 
     useEffect(() => {
         const fetchUserData = () => {
-            let fetchedData = getPatient('123');
-            fetchedData.upcomingAppointments = fetchedData.upcomingAppointments.map(item => ({
-                ...item,
-                doctor: getDoctor(item.doctorid)
-            }));
-            fetchedData.medicalRecords = fetchedData.medicalRecords.map(item => ({
-                ...item,
-                doctor: getDoctor(item.doctorid)
-            }));
-            console.log(fetchedData);
+            try {
+                const data = getPatient('1');
+                const appointments = getAppointments('1');
+                const records = getRecords('1');
+                console.log(data, appointments, records);
 
-            setTimeout(() => {
-                setUser(fetchedData);
+                const fetchedData = {
+                    ...data,
+                    upcomingAppointments: appointments.map(app => ({
+                        ...app,
+                        doctor: getDoctor(app.doctorid),
+                    })),
+                    medicalRecords: records.map(app => ({
+                        ...app,
+                        doctor: getDoctor(app.doctorid),
+                    })),
+                };
+
+                setTimeout(() => {
+                    setUser(fetchedData);
+                    setIsLoading(false);
+                }, 1500);
+            } catch (error) {
+                console.error("Error fetching patient data:", error);
                 setIsLoading(false);
-            }, 1500);
+            }
         };
 
         fetchUserData();
     }, []);
+
 
     if (isLoading) {
         return <LoadingPage />;
@@ -188,7 +200,7 @@ const AppointmentCard = ({ appointment }) => {
                     <Calendar size={24} />
                 </div>
                 <div className="ml-4">
-                    <p className="font-bold text-slate-800">Dr. {appointment.doctor.name}</p>
+                    <p className="font-bold text-slate-800">{appointment.doctor.name}</p>
                     <p className="text-sm text-slate-600">{appointment.doctor.specialty}</p>
                     <p className="text-sm text-slate-600 font-semibold">{new Date(appointment.date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })} at {appointment.timeSlot}</p>
                 </div>

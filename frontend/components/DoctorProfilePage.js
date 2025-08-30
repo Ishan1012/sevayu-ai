@@ -14,6 +14,8 @@ import {
 import { getDoctor } from '@/services/DoctorService';
 import { getDoctorAppointments, getDoctorRecords, getRecords } from '@/services/AppointmentService';
 import LoadingPage from './LoadingPage';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const DoctorProfilePage = () => {
     const [doctor, setDoctor] = useState(null);
@@ -22,8 +24,8 @@ const DoctorProfilePage = () => {
     useEffect(() => {
         const fetchDoctorData = () => {
             try {
-                const data = getDoctor(1);
-                const appointment = getDoctorAppointments(1);
+                const data = getDoctor(7);
+                const appointment = getDoctorAppointments(7);
                 const records = getDoctorRecords(1);
 
                 const fetchedData = {
@@ -74,7 +76,7 @@ const DoctorProfilePage = () => {
 
                     {/* Right Column: Dashboard and Appointments */}
                     <div className="lg:col-span-2 space-y-8">
-                        <DoctorDashboardNav />
+                        <DoctorDashboardNav doctor={doctor} />
                         <UpcomingAppointments appointments={doctor.upcomingAppointments} />
                         <PatientRecords records={doctor.patientRecords} />
                     </div>
@@ -84,32 +86,37 @@ const DoctorProfilePage = () => {
     );
 };
 
+const DoctorProfileCard = ({ doctor }) => {
+    const router = useRouter();
+    const openSettings = () => {
+            router.push(`/settings?id=${doctor.id}&doctor=true`);
+    };
 
-// --- Sub-components ---
+    return (
+        <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+            <img
+                src={doctor.imageUrl}
+                alt="Doctor Profile"
+                className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-emerald-200"
+            />
+            <h1 className="text-3xl font-bold text-slate-900">{doctor.name}</h1>
+            <p className="text-emerald-600 font-semibold mt-1">{doctor.specialty}</p>
 
-const DoctorProfileCard = ({ doctor }) => (
-    <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
-        <img
-            src={doctor.imageUrl}
-            alt="Doctor Profile"
-            className="w-32 h-32 rounded-full mx-auto mb-6 border-4 border-emerald-200"
-        />
-        <h1 className="text-3xl font-bold text-slate-900">{doctor.name}</h1>
-        <p className="text-emerald-600 font-semibold mt-1">{doctor.specialty}</p>
-
-        <div className="mt-8 text-left space-y-4">
-            <InfoItem icon={<FileText size={20} />} label="Qualifications" value={doctor.qualifications} />
-            <InfoItem icon={<Calendar size={20} />} label="Experience" value={`${doctor.experience}`} />
-            <InfoItem icon={<Phone size={20} />} label="Phone" value={doctor.phone} />
-            <InfoItem icon={<MapPin size={20} />} label="Address" value={doctor.address} />
+            <div className="mt-8 text-left space-y-4">
+                <InfoItem icon={<FileText size={20} />} label="Qualifications" value={doctor.qualifications} />
+                <InfoItem icon={<Calendar size={20} />} label="Experience" value={`${doctor.experience}`} />
+                <InfoItem icon={<Phone size={20} />} label="Phone" value={doctor.phone} />
+                <InfoItem icon={<MapPin size={20} />} label="Address" value={doctor.address} />
+            </div>
+            <button
+                onClick={openSettings}
+                className="mt-8 w-full bg-emerald-600 text-white cursor-pointer font-semibold py-3 rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer"
+            >
+                Edit Profile
+            </button>
         </div>
-        <button
-            className="mt-8 w-full bg-emerald-600 text-white font-semibold py-3 rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer"
-        >
-            Edit Profile
-        </button>
-    </div>
-);
+    );
+}
 
 const InfoItem = ({ icon, label, value }) => (
     <div className="flex items-center">
@@ -123,12 +130,19 @@ const InfoItem = ({ icon, label, value }) => (
     </div>
 );
 
-const DoctorDashboardNav = () => {
+const DoctorDashboardNav = ({ doctor }) => {
+    const router = useRouter();
     const navItems = [
         { icon: <ClipboardList />, text: "My Schedule" },
         { icon: <Users />, text: "My Patients" },
         { icon: <Settings />, text: "Account Settings" },
     ];
+
+    const openSettings = (name) => {
+        if (name === "Account Settings") {
+            router.push(`/settings?id=${doctor.id}&doctor=true`);
+        }
+    };
 
     return (
         <div className="bg-white rounded-2xl shadow-xl p-8">
@@ -137,6 +151,7 @@ const DoctorDashboardNav = () => {
                 {navItems.map(item => (
                     <div
                         key={item.text}
+                        onClick={() => openSettings(item.text)}
                         className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-lg text-center cursor-pointer hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
                     >
                         <div className="text-emerald-500 mb-2">{React.cloneElement(item.icon, { size: 32, strokeWidth: 1.5 })}</div>
@@ -161,8 +176,13 @@ const UpcomingAppointments = ({ appointments }) => (
     </div>
 );
 
-const AppointmentCard = ({ appointment }) => (
-    <div className="bg-slate-50 p-4 rounded-lg flex items-center justify-between hover:bg-emerald-50 transition-colors cursor-pointer">
+const AppointmentCard = ({ appointment }) => {
+    const router = useRouter();
+    const openAppointment = () => {
+        router.push(`/appointments?id=${appointment.id}`);
+    }
+    return (
+    <div onClick={openAppointment} className="bg-slate-50 p-4 rounded-lg flex items-center justify-between hover:bg-emerald-50 transition-colors cursor-pointer">
         <div className="flex items-center">
             <div className="bg-emerald-100 text-emerald-700 p-3 rounded-lg">
                 <Calendar size={24} />
@@ -178,6 +198,7 @@ const AppointmentCard = ({ appointment }) => (
         <ChevronRight className="text-slate-400" />
     </div>
 );
+};
 
 const PatientRecords = ({ records }) => (
     <div className="bg-white rounded-2xl shadow-xl p-8">
@@ -204,9 +225,9 @@ const RecordCard = ({ record }) => (
                 <p className="text-sm text-slate-600 font-semibold">{new Date(record.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
             </div>
         </div>
-        <a href={record.reportUrl} target="_blank" rel="noopener noreferrer" className="flex items-center font-semibold text-emerald-600 hover:text-emerald-800">
+        <Link href={record.reportUrl} target="_blank" rel="noopener noreferrer" className="flex items-center font-semibold text-emerald-600 hover:text-emerald-800">
             View Report
-        </a>
+        </Link>
     </div>
 );
 

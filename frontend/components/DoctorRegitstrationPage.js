@@ -8,9 +8,8 @@ import {
     Award,
     Briefcase,
     Camera,
-    Clock,
-    BookText
 } from "lucide-react";
+import { specialties } from '@/services/getSpecialities';
 
 const DoctorRegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -62,12 +61,6 @@ const DoctorRegistrationPage = () => {
         console.log("Doctor Registration Data:", formData);
         alert('Doctor registration submitted successfully! (Check console for data)');
     };
-
-    const specialties = [
-        "Consultant Physician (OPD)", "Cardiologist", "Dermatologist", "Neurologist",
-        "Orthopedist", "Pediatrician", "Psychiatrist", "Gynecologist",
-        "ENT Specialist", "Ophthalmologist", "Other"
-    ];
 
     const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const timeSlots = [

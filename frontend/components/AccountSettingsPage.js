@@ -14,14 +14,20 @@ import {
 } from "lucide-react";
 import LoadingPage from './LoadingPage';
 import { getPatient } from '@/services/PaitentService';
+import { getDoctor } from '@/services/DoctorService';
 
-const AccountSettingsPage = ({ userid }) => {
+const AccountSettingsPage = ({ userid, isDoctor }) => {
     const [settings, setSettings] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         setTimeout(() => {
-            const data = getPatient(userid);
+            let data;
+            if(isDoctor) {
+                data = getDoctor(Number(userid));
+            } else {
+                data = getPatient(userid);
+            }
             setSettings(data);
             setIsLoading(false);
         }, 1000);
