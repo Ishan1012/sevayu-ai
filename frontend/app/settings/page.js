@@ -1,19 +1,27 @@
 'use client';
+
 import AccountSettingsPage from '@/components/AccountSettingsPage'
 import Header from '@/components/Header'
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense } from 'react'
 
-function Settings() {
+function SettingsContent() {
   const searchParams = useSearchParams();
   const userid = searchParams.get("id");
   const isDoctor = searchParams.get("doctor") || false;
+
   return (
-    <Suspense fallback={<div>Loading appointment details...</div>}>
+    <div>
       <Header />
       <AccountSettingsPage userid={userid} isDoctor={isDoctor} />
-    </Suspense>
-  )
+    </div>
+  );
 }
 
-export default Settings
+export default function Settings() {
+  return (
+    <Suspense fallback={<div>Loading account settings...</div>}>
+      <SettingsContent />
+    </Suspense>
+  );
+}

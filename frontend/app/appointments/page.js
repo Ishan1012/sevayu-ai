@@ -1,18 +1,26 @@
 'use client';
+
 import AppointmentDetailsPage from '@/components/AppointmentDetailsPage'
 import Header from '@/components/Header'
 import { useSearchParams } from 'next/navigation';
 import React, { Suspense } from 'react'
 
-function AppointmentDetails() {
+function AppointmentDetailsContent() {
   const searchParams = useSearchParams();
-  const appointmentId = searchParams.get("id")
+  const appointmentId = searchParams.get("id");
+
   return (
-    <Suspense fallback={<div>Loading appointment details...</div>}>
+    <div>
       <Header />
       <AppointmentDetailsPage appointmentId={appointmentId} />
-    </Suspense>
-  )
+    </div>
+  );
 }
 
-export default AppointmentDetails
+export default function AppointmentDetails() {
+  return (
+    <Suspense fallback={<div>Loading appointment details...</div>}>
+      <AppointmentDetailsContent />
+    </Suspense>
+  );
+}
