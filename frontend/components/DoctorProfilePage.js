@@ -146,7 +146,7 @@ const DoctorDashboardNav = ({ doctor }) => {
 
     return (
         <div className="bg-white rounded-2xl shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-slate-900 mb-6">Doctor's Dashboard</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-6">Doctor&apos;s Dashboard</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {navItems.map(item => (
                     <div
